@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import './register.css';
-import { Link } from "react-router-dom";
-import axios from 'axios';
+import { Link, withRouter } from "react-router-dom";
+import { registerUser } from "../actions/actions";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-export default class Register extends Component {
+class Register extends Component {
     constructor(props) {
-        super(props)
+        super();
         this.state = {
             email: '',
             pass: ''
@@ -20,24 +22,12 @@ export default class Register extends Component {
         })
     }
 
-    getRegister = (email, pass) => {
-        // eslint-disable-next-line no-undef
-        axios.post('http://34.89.93.186:8080/apiv1/register' , {
-            username: email,
-            password: pass
-        })
-        .then(() => {
-            this.props.history.push('/login');
-        })
-        .catch(() => {
-            alert("Something is wrong! Try again!");
-        })
-    }
-
-    onSubmit = (evt) => {
+    onSubmit = evt => {
         evt.preventDefault();
-        this.getRegister(this.state.email, this.state.pass);
-    }
+           
+        this.props.registerUser(this.state.email, this.state.pass, this.props.history); 
+    
+    };
 
     render() {
         return (
@@ -63,3 +53,17 @@ export default class Register extends Component {
         );
     }
 }
+
+Register.propTypes = {
+    registerUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+  };
+
+const mapStateToProps = state => ({
+    auth: state.auth,
+});
+  
+export default connect(
+    mapStateToProps,
+    { registerUser }
+)(withRouter(Register));

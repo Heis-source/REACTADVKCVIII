@@ -1,15 +1,23 @@
 import React, { Component } from "react";
 import './login.css';
 import { Link } from "react-router-dom";
-import axios from 'axios';
+import { loginUser } from "../actions/actions";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-export default class Login extends Component {
+class Login extends Component {
     constructor(props) {
-        super(props)
+        super()
         this.state = {
             email: '',
             pass: ''
         };    
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.auth.isAuthenticated) {
+          this.props.history.push("/ads"); // push user to dashboard when they login
+        }
     }
 
     inputChange = (evt) => {
@@ -20,23 +28,9 @@ export default class Login extends Component {
         })
     }
 
-    logOn = (email, pass) => {
-        // eslint-disable-next-line no-undef
-        axios.post('http://34.89.93.186:8080/apiv1/login' , {
-            username: email,
-            password: pass
-        })
-        .then(() => {
-            this.props.history.push('/ads');
-        })
-        .catch(() => {
-            this.props.history.push('/register');
-        })
-    }
-
     onSubmit = (evt) => {
         evt.preventDefault();
-        this.logOn(this.state.email, this.state.pass);
+        this.props.loginUser(this.state.email, this.state.pass);
     }
 
     render() {
@@ -63,3 +57,17 @@ export default class Login extends Component {
         );
     }
 }
+
+Login.propTypes = {
+    loginUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+  };
+
+const mapStateToProps = state => ({
+    auth: state.auth,
+  });
+
+  export default connect(
+    mapStateToProps,
+    { loginUser }
+  )(Login);

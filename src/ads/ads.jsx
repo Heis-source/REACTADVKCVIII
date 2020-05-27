@@ -3,11 +3,13 @@ import Tags from "./tags.jsx";
 import makingURL from './makingurl.js';
 import './ads.css'
 import { Link } from "react-router-dom";
-import axios from 'axios';
+import { adsNoFilter } from "../actions/actions";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-export default class Ads extends Component {
+class Ads extends Component {
     constructor(props) {
-        super(props)
+        super()
         this.state = {
             data: [],
             name: '',
@@ -18,7 +20,7 @@ export default class Ads extends Component {
         };
     }
 
-    search = (filter) => {
+    /*search = (filter) => {
         axios.defaults.withCredentials = true;
         axios.get('http://34.89.93.186:8080/apiv1/anuncios' + filter)
         .then(response => {
@@ -29,14 +31,14 @@ export default class Ads extends Component {
             alert("You Shall Not Pass! Log in first!");
             this.props.history.push('/login');
         })
-    }
+    }*/
     
     onSubmit = (evt) => {
         evt.preventDefault();
-        this.setState({ searched: true });
+
         const finalURL = makingURL([this.state.name], [this.state.sell], [this.state.pricemin], [this.state.pricemax], [this.state.tags]);
-        this.search(finalURL.toString());
-        console.log(finalURL);
+        this.props.addNoFilter(finalURL.toString());
+
     }
 
     onChangeInput = (evt) => {
@@ -118,3 +120,17 @@ export default class Ads extends Component {
         );
     }
 }
+
+Ads.propTypes = {
+    adsNoFilter: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+  };
+
+const mapStateToProps = state => ({
+    auth: state.auth,
+  });
+
+  export default connect(
+    mapStateToProps,
+    { adsNoFilter }
+  )(Ads);
