@@ -2,10 +2,6 @@ import { SET_CURRENT_USER } from "../actions/types";
 
 const isEmpty = require("is-empty");
 
-const initialState = {
-  username: {},
-};
-
 export default function(state = [], action) {
   switch (action.type) {
     case SET_CURRENT_USER:

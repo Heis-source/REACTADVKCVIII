@@ -6,12 +6,14 @@ import { Link } from "react-router-dom";
 import { adsNoFilter } from "../actions/actions";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import store from "../store"
 
 class Ads extends Component {
     constructor(props) {
         super()
         this.state = {
             data: [],
+            ads: [],
             name: '',
             sell: '',
             pricemin: 0,
@@ -20,25 +22,10 @@ class Ads extends Component {
         };
     }
 
-    /*search = (filter) => {
-        axios.defaults.withCredentials = true;
-        axios.get('http://34.89.93.186:8080/apiv1/anuncios' + filter)
-        .then(response => {
-            const data = response.data.results;
-            this.setState({ data });
-        })
-        .catch(error => {
-            alert("You Shall Not Pass! Log in first!");
-            this.props.history.push('/login');
-        })
-    }*/
-    
     onSubmit = (evt) => {
         evt.preventDefault();
-
         const finalURL = makingURL([this.state.name], [this.state.sell], [this.state.pricemin], [this.state.pricemax], [this.state.tags]);
-        this.props.addNoFilter(finalURL.toString());
-
+        this.props.adsNoFilter(finalURL);
     }
 
     onChangeInput = (evt) => {
@@ -46,10 +33,14 @@ class Ads extends Component {
         let inputName = evt.target.name;
         this.setState({ [inputName]: inputValue});
     }
+    
+    componentDidMount = () => {
+        this.props.adsNoFilter();
+    }
 
     render() {
-        const { data } = this.state;
-        const renderAds = data.map((d) =>
+        const { ads } = store.getState().ads;
+        const renderAds = () => ads.map((d) =>
         <div className="card mb-3" key={d._id}>
         <div className="row no-gutters">
             <div className="col-md-4">
@@ -123,12 +114,11 @@ class Ads extends Component {
 
 Ads.propTypes = {
     adsNoFilter: PropTypes.func.isRequired,
-    auth: PropTypes.object.isRequired,
   };
 
 const mapStateToProps = state => ({
-    auth: state.auth,
-  });
+    adsNoFilter: state.adsNoFilter,
+});
 
   export default connect(
     mapStateToProps,
